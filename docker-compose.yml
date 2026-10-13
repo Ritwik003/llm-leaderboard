@@ -1,0 +1,46 @@
+# Only the two INFRASTRUCTURE services run in Docker: Postgres + Redis.
+# You run the FastAPI app + Celery worker locally (venv) so you can see logs
+# and Ctrl+C them directly — no more "restarted Docker but tasks kept going"
+# confusion, because the worker was never in Docker to begin with.
+#
+#   docker compose up -d      → starts postgres + redis
+#   docker compose down       → stops them
+#   docker compose down -v     → stops them AND wipes all data (fresh start)
+
+services:
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: leaderboard_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: llm_leaderboard
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: leaderboard_redis
+    ports:
+      - "6379:6379"
+    # NOTE: NO --appendonly yes and NO data volume on purpose.
+    # Persistence is OFF so a restart always starts with an EMPTY Redis.
+    # This is what prevents the "I flushed the queue but the tasks came back
+    # after a restart" problem — there's nothing on disk to reload.
+    command: redis-server --save "" --appendonly no
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

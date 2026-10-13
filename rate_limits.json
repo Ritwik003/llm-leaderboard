@@ -1,0 +1,58 @@
+{
+  "_comment": "Real published free-tier limits. Edit this file if your account differs - it is read at runtime, no code change needed. rps = requests per second. A value below 1.0 means the provider forces a WAIT between calls (e.g. 0.07 rps = one request every ~14 seconds).",
+
+  "groq": {
+    "default_rps": 0.28,
+    "daily_request_budget": 900,
+    "notes": "Free tier: 30 RPM org-wide, but the token-per-day cap (TPM/TPD, e.g. llama-3.3-70b ~100K TPD) binds first with 512-token benchmark responses. 0.28 rps (~1 call / 3.5s) keeps us under the token throughput ceiling that was triggering 429s.",
+    "models": {}
+  },
+
+  "nvidia": {
+    "default_rps": 0.55,
+    "daily_request_budget": 800,
+    "notes": "Free tier: ~40 RPM per model, account level. Credit budget is ambiguous (some accounts 1000 credits ~ 1 credit per call). Budget kept below 1000 to be safe.",
+    "models": {}
+  },
+
+  "gemini": {
+    "default_rps": 0.15,
+    "daily_request_budget": 1200,
+    "notes": "Free tier: Flash/Flash-Lite ~15-30 RPM and 1500 RPD. PRO models were removed from the free tier in Apr-May 2026 - expect them to fail preflight.",
+    "models": {
+      "gemini-2.5-pro": 0.08,
+      "gemini-3-pro": 0.08,
+      "gemini-3.1-pro": 0.08,
+      "gemini-pro": 0.08,
+      "gemini-2.0-flash": 0.25,
+      "gemini-2.5-flash": 0.16,
+      "gemini-3.1-flash": 0.25,
+      "gemini-3.5-flash": 0.25,
+      "gemini-flash": 0.25,
+      "gemma": 0.25
+    }
+  },
+
+  "mistral": {
+    "default_rps": 0.3,
+    "daily_request_budget": 3000,
+    "notes": "Values taken from the Mistral console 'Completion rate limits per model' page. Several models are FAR below 1 rps - magistral-small at 0.03 rps is one request every 33 seconds.",
+    "models": {
+      "magistral-small": 0.03,
+      "mistral-large": 0.07,
+      "magistral-medium": 0.08,
+      "mistral-medium-2508": 0.38,
+      "mistral-medium-2505": 0.42,
+      "mistral-medium": 0.42,
+      "ministral-14b": 0.50,
+      "open-mistral-nemo": 0.50,
+      "labs-leanstral": 0.63,
+      "devstral": 0.83,
+      "mistral-small-2603": 0.83,
+      "codestral": 2.08,
+      "ministral-8b": 3.13,
+      "mistral-small": 5.00,
+      "ministral-3b": 12.50
+    }
+  }
+}
